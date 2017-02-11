@@ -1,0 +1,40 @@
+SIP UserAgent(UAS and UAC) Sample -- by larkguo@gmail.com
+
+
+1.Architecture:
+	UA ==command==> eXosip2
+	UA <==notify==  eXosip2
+
+2.Requires:
+	libosip2-5.0.0
+	libeXosip2-5.0.0
+
+3.Compile:(assumed that osip2 & eXosip2 are installed in /usr/local)
+	gcc -I/usr/local/include -L/usr/local/lib ua.c -o ua -leXosip2 \
+	-losip2 -losipparser2 -lpthread
+
+4.Run:
+	export LD_LIBRARY_PATH+=/usr/local/lib:
+	./ua -r sip:DOMAIN-OR-IP -R sip:X.X.X.X:5060 -f sip:FROM-USER@DOMAIN \
+	-t sip:TO-USER@DOMAIN -U AUTH-USER -P AUTH-PASSWORD
+
+6.Register:
+	UAC/UAS        PROXY
+	1  	-REGISTER->
+		<-401-
+		-REGISTER(auth)->
+		<-200-
+
+7.Call:
+	UAC  (PROXY)    UAS
+	2  	-INVITE->
+		<-407-
+		-INVITE(auth)->
+		<-180-
+		<-200-        3
+		-ACK->
+	4  	-reINVITE->
+		<-200-
+		-ACK->
+	5 	 -BYE->
+		<-200-
